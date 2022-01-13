@@ -23,7 +23,7 @@ let parseTime = function(t){
 };
 let formatTime = function(t){
     let s = t%60;
-    let m = (t-s)%60;
+    let m = (t-s)/60;
     return m+":"+("0"+s).slice(-2);
 };
 let formatTimeJP = function(t){
@@ -37,6 +37,14 @@ let formatTimeJP = function(t){
 };
 
 
+/*let stages = `
+説明    0:05 img/a.png
+BOR移動 0:01 img/b.png
+ワーク  0:14 img/c.png
+BOR移動 0:01 img/d.png
+発表    0:06 img/e.png
+まとめ  0:03 img/f.png
+`*/
 let stages = `
 説明    5:00 img/a.png
 BOR移動 1:00 img/b.png
@@ -86,7 +94,7 @@ let main = async function(){
             let start = Date.now();
             while(true){
                 let now = Date.now();
-                let elapsed = Math.floor((now-start)/1000);
+                let elapsed = Math.floor(time-(now-start)/1000);
                 timeE.setInner(formatTime(elapsed));
                 
                 let v = await Promise.race([Pause(10),keyEvt()]);
@@ -94,6 +102,8 @@ let main = async function(){
                     i-=2;
                     break;
                 }else if(v === "R"){
+                    break;
+                }else if((now-start)/1000 > time){
                     break;
                 }
             }

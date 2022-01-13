@@ -7,12 +7,13 @@ body{
 .left{
     width:60%;
     float:left;
-    font-size:10vw;
+    font-size:13vw;
     text-align:center;
-    padding-top:20vh;
+    padding-top:0vh;
 }
 
 .right{
+    font-size:6vw;
     width:40%;
     height:100vh;
     float:left;
