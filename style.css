@@ -1,0 +1,23 @@
+body{
+    margin:0px;
+    font-family:Arial;
+}
+
+
+.left{
+    width:60%;
+    float:left;
+    font-size:10vw;
+    text-align:center;
+    padding-top:20vh;
+}
+
+.right{
+    width:40%;
+    height:100vh;
+    float:left;
+}
+
+.focus{
+    font-weight:900;
+}
