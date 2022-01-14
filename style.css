@@ -12,6 +12,10 @@ body{
     padding-top:0vh;
 }
 
+.lable1{
+    line-height: 19vw;
+}
+
 .right{
     font-size:6vw;
     width:40%;
