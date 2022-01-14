@@ -2,7 +2,7 @@
 let keyres = ()=>{};
 
 window.addEventListener("keydown",function(e){
-    console.log(e);
+    //console.log(e);
     if(e.ctrlKey)return false;
     if(e.key === "ArrowLeft"){
         keyres("L");
@@ -47,9 +47,7 @@ BOR移動 0:01 img/d.png
 `*/
 let stages = `
 説明    5:00 img/a.png
-BOR移動 1:00 img/b.png
-ワーク  14:00 img/c.png
-BOR移動 1:00 img/d.png
+ワーク  15:00 img/c.png
 発表    6:00 img/e.png
 まとめ  3:00 img/f.png
 `.trim().split("\n").map(l=>{
@@ -65,6 +63,15 @@ BOR移動 1:00 img/d.png
 
 console.log(stages);
 
+let setCursorPosition = async function(elem,i){
+    var rangeobj = document.createRange();
+    var selectobj = window.getSelection();
+    rangeobj.setStart(elem.childNodes[0], i);
+    selectobj.removeAllRanges();
+    selectobj.addRange(rangeobj);
+};
+
+let pauser = new Pauser();
 
 
 let main = async function(){
@@ -72,7 +79,7 @@ let main = async function(){
     let BG = body.add("div","class:bg");
     let left = body.add("div","class:left");
     let label1 = left.add("div","class:lable1");
-    let timeE = left.add("div","class:time");
+    let timeE = left.add("div","class:time;");
     let right = body.add("div","class:right");
     let schedE = right.add("div","class:sched");
     let labels = [];
@@ -81,6 +88,31 @@ let main = async function(){
         let l = schedE.add("div",0,label+formatTimeJP(time));
         labels.push(l);
     }
+    
+    //edit time functionality
+    (()=>{
+        let clickfn = async (e)=>{
+            await pauser.pause();//await ensures the break happens at the call point
+            timeE.attr("contenteditable",true);
+            
+            //focusing, and setting the caret position
+            let elem = timeE.e;
+            //e.focus();
+            setCursorPosition(elem,elem.innerHTML.length);
+            
+            
+            let keyEvt = timeE.on("keydown",(e)=>{
+                let time1 = parseTime(timeE.e.innerHTML);
+                if(e.key === "Enter"){
+                    keyEvt.remove();
+                    pauser.resume(time1,Date.now());
+                    timeE.attr("contenteditable",false);
+                    timeE.once("click",clickfn);
+                }
+            });
+        }
+        timeE.once("click",clickfn);
+    })();
     
     let i = 0;
     
@@ -97,6 +129,8 @@ let main = async function(){
                 let elapsed = Math.floor(time-(now-start)/1000);
                 timeE.setInner(formatTime(elapsed));
                 
+                //edits the time if paused
+                [time,start] = await pauser.wait(time,start);
                 let v = await Promise.race([Pause(10),keyEvt()]);
                 if(v === "L"){
                     i-=2;
