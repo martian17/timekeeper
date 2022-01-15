@@ -91,6 +91,7 @@ BOR移動 0:01 img/d.png
 発表    0:06 img/e.png
 まとめ  0:03 img/f.png
 `*/
+/*
 let stages = `
 説明    5:00 img/a.png
 ワーク  15:00 img/c.png
@@ -105,9 +106,9 @@ let stages = `
         time:time,
         img:l[2]
     }
-});
+});*/
 
-console.log(stages);
+//console.log(stages);
 
 let setCursorPosition = async function(elem,i){
     var rangeobj = document.createRange();
@@ -117,15 +118,52 @@ let setCursorPosition = async function(elem,i){
     selectobj.addRange(rangeobj);
 };
 
+
+let getStages = function(body){
+    return new Promise((res,rej)=>{
+        
+        let head = body.add("div");
+        head.add("h1",0,"タイムキーパーアプリ");
+        head.add("p",0,"下のテキストエリアにミーティングの時間割を入力してください。新しい行を追加することもできます。");
+        
+        //the input section
+        let text = head.add("textarea",0,0,"width:238px;height:133px;");
+        text.e.value = `説明    5:00
+ワーク  15:00
+発表    6:00
+まとめ  3:00`;
+        let s = head.add("input","type:button;value:生成;");
+        s.on("click",function(){
+            head.remove();
+            let stages = text.e.value.trim().split("\n").map(l=>{
+                l = l.trim().split(/\s+/);
+                let time = parseTime(l[1]);
+                //console.log(time);
+                return {
+                    label:l[0],
+                    time:time,
+                    img:l[2]
+                };
+            });
+            console.log(stages);
+            res(stages);
+        });
+    });
+};
+
 let pauser = new Pauser();
 
 let main = async function(){
     let body = new ELEM(document.body);
-    let BG = body.add("div","class:bg");
-    let left = body.add("div","class:left");
+    let stages = await getStages(body);
+    
+    
+    let wrap = body.add("div");
+    let BG = wrap.add("div","class:bg");
+    let left = wrap.add("div","class:left");
     let label1 = left.add("div","class:lable1");
     let timeE = left.add("div","class:time;");
-    let right = body.add("div","class:right");
+    let right = wrap.add("div","class:right");
     let schedE = right.add("div","class:sched");
     let labels = [];
     let STATE = "";
